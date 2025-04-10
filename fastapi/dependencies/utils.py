@@ -602,7 +602,7 @@ async def solve_dependencies(
         ):
             original_call = sub_dependant.call
             call = getattr(
-                dependency_overrides_provider, "dependency_overrides", {}
+                dependency_overrides_provider, "dependency_override", {}
             ).get(original_call, original_call)
             use_path: str = sub_dependant.path  # type: ignore
             use_sub_dependant = get_dependant(
@@ -845,6 +845,7 @@ async def _extract_form_body(
     values = {}
     first_field = body_fields[0]
     first_field_info = first_field.field_info
+    processed_keys = set()
 
     for field in body_fields:
         value = _get_multidict_value(field, received_body)
@@ -873,10 +874,11 @@ async def _extract_form_body(
                 for sub_value in value:
                     tg.start_soon(process_fn, sub_value.read)
             value = serialize_sequence_value(field=field, value=results)
+        processed_keys.add(field.alias)
         if value is not None:
             values[field.alias] = value
     for key, value in received_body.items():
-        if key not in values:
+        if key not in processed_keys:
             values[key] = value
     return values
 

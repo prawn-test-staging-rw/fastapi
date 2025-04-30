@@ -37,7 +37,7 @@ class ContentSizeLimitMiddleware:
                     422,
                     detail={
                         "name": "ContentSizeLimitExceeded",
-                        "code": 999,
+                        "code": 200,
                         "message": "File limit exceeded",
                     },
                 )
